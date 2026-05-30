@@ -337,15 +337,15 @@ async def confirmar_lectura_asistida(
     except ValueError:
         raise HTTPException(status_code=400, detail="Formato de fecha inválido")
 
-    # Renombrar foto de temporal a permanente
+    # Eliminar foto de temporal para no ocupar espacio en disco
     temp_path = FOTOS_DIR / foto_nombre
-    if not temp_path.exists():
-        raise HTTPException(status_code=404, detail="La foto temporal no existe o ya fue procesada.")
+    if temp_path.exists():
+        try:
+            os.remove(temp_path)
+        except Exception as e:
+            print(f"No se pudo eliminar la foto temporal: {e}")
 
-    file_ext = temp_path.suffix.lower()
-    foto_nombre_final = f"medidor_{cuenta}_{fecha_lectura}_{int(datetime.utcnow().timestamp())}{file_ext}"
-    final_path = FOTOS_DIR / foto_nombre_final
-    shutil.move(temp_path, final_path)
+    foto_nombre_final = None
 
     # El resto del cálculo es idéntico a registrar_lectura
     # 1. Buscar punto anterior
