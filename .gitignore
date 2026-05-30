@@ -1,0 +1,49 @@
+# Entornos Virtuales de Python
+.venv/
+venv/
+env/
+ENV/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Node.js (Frontend)
+node_modules/
+dist/
+build/
+.svelte-kit/
+.next/
+.cache/
+
+# Archivos de configuración y claves privadas (¡SÚPER IMPORTANTE!)
+google_key.json
+.env
+.env.*
+*.pem
+*.key
+*.conf
+
+# Base de datos local de SQLite
+data/app.db
+*.db
+*.sqlite
+
+# Fotos físicas cargadas por el asistente
+backend/data/fotos_medidores/*
+!backend/data/fotos_medidores/.gitkeep
+
+# Facturas en PDF originales
+data/facturas_ordenadas/
+*.pdf
+
+# Reportes temporales generados
+reports/
+
+# Archivos temporales de sistema e IDEs
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*.tmp
