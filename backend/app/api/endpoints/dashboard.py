@@ -75,10 +75,14 @@ def obtener_kpis(cuenta: Optional[str] = None, db: Session = Depends(get_db)):
 
 @router.get("/consumo-mensual")
 def consumo_mensual(cuenta: Optional[str] = None, db: Session = Depends(get_db)):
-    # Agrupa por mes de emisión
-    # En SQLite, strftime('%Y-%m', fecha_emision) nos da "YYYY-MM"
+    # Agrupa por mes de emisión de forma compatible con SQLite y PostgreSQL
+    if db.bind.dialect.name == "postgresql":
+        mes_expr = func.to_char(Factura.fecha_emision, "YYYY-MM")
+    else:
+        mes_expr = func.strftime("%Y-%m", Factura.fecha_emision)
+
     query = db.query(
-        func.strftime("%Y-%m", Factura.fecha_emision).label("mes"),
+        mes_expr.label("mes"),
         func.sum(Factura.consumo_kwh).label("kwh"),
         func.sum(Factura.monto_total).label("monto"),
         func.count(Factura.id).label("facturas"),
@@ -142,9 +146,14 @@ def resumen_por_cuenta(db: Session = Depends(get_db)):
 
 @router.get("/comparativa-anual")
 def comparativa_anual(cuenta: Optional[str] = None, db: Session = Depends(get_db)):
-    # Agrupa por año de emisión y compara consumo y costo total
+    # Agrupa por año de emisión y compara consumo y costo total de forma compatible con SQLite y PostgreSQL
+    if db.bind.dialect.name == "postgresql":
+        anio_expr = func.to_char(Factura.fecha_emision, "YYYY")
+    else:
+        anio_expr = func.strftime("%Y", Factura.fecha_emision)
+
     query = db.query(
-        func.strftime("%Y", Factura.fecha_emision).label("anio"),
+        anio_expr.label("anio"),
         func.sum(Factura.consumo_kwh).label("kwh"),
         func.sum(Factura.monto_total).label("monto"),
     ).filter(Factura.estado == "ok", Factura.fecha_emision.isnot(None))
