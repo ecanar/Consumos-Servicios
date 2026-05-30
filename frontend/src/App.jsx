@@ -437,10 +437,13 @@ export default function App() {
                     <YAxis stroke="#64748b" fontSize={10} tickLine={false} />
                     <Tooltip
                       contentStyle={{
-                        background: "rgba(255, 255, 255, 0.95)",
+                        background: "rgba(255, 255, 255, 0.35)",
+                        backdropFilter: "blur(8px)",
+                        WebkitBackdropFilter: "blur(8px)",
                         borderRadius: "8px",
-                        border: "1px solid rgba(148, 163, 184, 0.2)",
+                        border: "1px solid rgba(148, 163, 184, 0.3)",
                         fontSize: "12px",
+                        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
                       }}
                     />
                     <Bar name="Monto ($)" dataKey="monto" fill="#3b82f6" radius={[3, 3, 0, 0]} />
@@ -485,9 +488,12 @@ export default function App() {
                     <YAxis stroke="#64748b" fontSize={12} tickLine={false} />
                     <Tooltip
                       contentStyle={{
-                        background: "rgba(255, 255, 255, 0.95)",
+                        background: "rgba(255, 255, 255, 0.35)",
+                        backdropFilter: "blur(8px)",
+                        WebkitBackdropFilter: "blur(8px)",
                         borderRadius: "12px",
-                        border: "1px solid rgba(148, 163, 184, 0.2)",
+                        border: "1px solid rgba(148, 163, 184, 0.3)",
+                        boxShadow: "0 4px 20px rgba(0, 0, 0, 0.05)",
                       }}
                     />
                     <Legend />
