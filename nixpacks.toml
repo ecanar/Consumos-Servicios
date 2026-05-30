@@ -1,5 +1,4 @@
 # Configuración unificada de compilación para Railway (Nixpacks)
-[providers]
 providers = ["node", "python"]
 
 [variables]
