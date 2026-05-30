@@ -32,6 +32,14 @@ app.add_middleware(
 )
 
 os.makedirs("data/fotos_medidores", exist_ok=True)
+from fastapi.responses import FileResponse
+from app.core.config import PROJECT_ROOT
+
+# Montar los assets estáticos compilados del Frontend si existen
+assets_dir = PROJECT_ROOT / "frontend" / "dist" / "assets"
+if assets_dir.exists():
+    app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="assets")
+
 app.mount("/fotos", StaticFiles(directory="data/fotos_medidores"), name="fotos")
 
 app.include_router(facturas.router, prefix="/api/facturas", tags=["Facturas"])
@@ -42,3 +50,16 @@ app.include_router(lecturas.router, prefix="/api/lecturas-semanales", tags=["Lec
 @app.get("/api/health")
 def health():
     return {"status": "ok", "app": settings.app_name}
+
+
+# Ruta comodín (catch-all) para redirigir rutas de React al index.html en producción
+@app.get("/{catchall:path}")
+async def serve_frontend(catchall: str):
+    # Si la ruta empieza con 'api' o 'fotos', pero no se resolvió arriba, devolvemos un 404 real
+    if catchall.startswith("api") or catchall.startswith("fotos"):
+        return {"detail": "Ruta de API no encontrada"}
+        
+    index_path = PROJECT_ROOT / "frontend" / "dist" / "index.html"
+    if index_path.exists():
+        return FileResponse(str(index_path))
+    return {"detail": "El Frontend aún no ha sido compilado. Ejecuta 'npm run build' en la carpeta frontend."}

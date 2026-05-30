@@ -1,0 +1,25 @@
+# Configuración unificada de compilación para Railway (Nixpacks)
+[providers]
+providers = ["node", "python"]
+
+[variables]
+PORT = "8000"
+# Apuntar la llamada API de React al mismo servidor de Railway de forma relativa
+VITE_API_BASE_URL = "/api"
+
+[phases.setup]
+nixPkgs = ["nodejs", "python311", "tesseract"]
+
+[phases.install]
+cmds = [
+  "cd frontend && npm ci",
+  "cd backend && pip install -r requirements.txt"
+]
+
+[phases.build]
+cmds = [
+  "cd frontend && npm run build"
+]
+
+[start]
+cmd = "cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
