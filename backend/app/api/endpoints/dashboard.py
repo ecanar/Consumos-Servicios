@@ -122,14 +122,14 @@ def consumo_mensual(cuenta: Optional[str] = None, db: Session = Depends(get_db))
 
 @router.get("/resumen-cuentas")
 def resumen_por_cuenta(db: Session = Depends(get_db)):
-    # Resumen acumulado de todas las cuentas
+    # Resumen acumulado de todas las cuentas agrupando correctamente por cuenta y cliente para compatibilidad estricta de PostgreSQL
     resultados = db.query(
         Factura.cuenta,
         Factura.cliente_nombre,
         func.count(Factura.id).label("facturas"),
         func.sum(Factura.consumo_kwh).label("kwh"),
         func.sum(Factura.monto_total).label("monto"),
-    ).filter(Factura.estado == "ok", Factura.cuenta.isnot(None)).group_by(Factura.cuenta).order_by(func.sum(Factura.monto_total).desc()).all()
+    ).filter(Factura.estado == "ok", Factura.cuenta.isnot(None)).group_by(Factura.cuenta, Factura.cliente_nombre).order_by(func.sum(Factura.monto_total).desc()).all()
 
     datos = []
     for r in resultados:
