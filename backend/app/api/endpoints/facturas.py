@@ -124,11 +124,11 @@ def listar_facturas(
 
 @router.get("/cuentas")
 def listar_cuentas(db: Session = Depends(get_db)):
-    # Retorna las cuentas únicas que tienen al menos un registro de consumo
+    # Retorna las cuentas únicas que tienen al menos un registro de consumo de forma compatible con PostgreSQL
     cuentas = (
         db.query(Factura.cuenta, Factura.cliente_nombre)
         .filter(Factura.cuenta.isnot(None))
-        .group_by(Factura.cuenta)
+        .group_by(Factura.cuenta, Factura.cliente_nombre)
         .order_by(Factura.cliente_nombre)
         .all()
     )
