@@ -8,11 +8,11 @@ PORT = "8000"
 VITE_API_BASE_URL = "/api"
 
 [phases.setup]
-nixPkgs = ["nodejs", "python311", "tesseract"]
+nixPkgs = ["nodejs", "python3", "tesseract"]
 
 [phases.install]
 cmds = [
-  "cd frontend && npm ci",
+  "cd frontend && npm install --no-audit --no-fund",
   "cd backend && pip install -r requirements.txt"
 ]
 
