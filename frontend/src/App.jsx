@@ -459,7 +459,7 @@ export default function App() {
             <article className="metric-card" style={{ minHeight: "180px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#64748b" }}>
                 <Calendar size={20} style={{ color: "#2563eb" }} />
-                <span style={{ fontWeight: "700", fontSize: "14px" }}>Consumo por Año</span>
+                <span style={{ fontWeight: "700", fontSize: "14px" }}>Gasto por Año</span>
               </div>
               <div style={{ height: "110px", width: "100%", marginTop: "12px" }}>
                 <ResponsiveContainer width="100%" height="100%">
@@ -476,7 +476,6 @@ export default function App() {
                       }}
                     />
                     <Bar name="Monto ($)" dataKey="monto" fill="#3b82f6" radius={[3, 3, 0, 0]} />
-                    <Bar name="Energía (kWh)" dataKey="kwh" fill="#10b981" radius={[3, 3, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -489,17 +488,12 @@ export default function App() {
             {/* 1. Historico de Consumo y Costos Mensuales */}
             <div className="dashboard-card">
               <h3 style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span>Histórico de Consumo y Costos Mensuales</span>
-                {leyendaAnio && (
-                  <span style={{ color: "#ef4444", fontSize: "13px", fontWeight: "800", letterSpacing: "0.05em" }}>
-                    {leyendaAnio}
-                  </span>
-                )}
+                <span>Consumo y Costos Mensuales (Últimos 12 Meses)</span>
               </h3>
               <div className="chart-container">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart
-                    data={consumoMensual}
+                    data={consumoMensual ? consumoMensual.slice(-12) : []}
                     margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
                   >
                     <defs>

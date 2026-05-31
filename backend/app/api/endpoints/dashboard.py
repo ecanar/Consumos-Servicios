@@ -156,13 +156,8 @@ def consumo_mensual(cuenta: Optional[str] = None, db: Session = Depends(get_db))
     datos = []
     for r in resultados:
         if r.mes and len(r.mes) >= 7:
-            partes = r.mes.split("-")
-            anio = partes[0]
-            mes = partes[1]
-            letra = mapa_anios.get(anio, anio)
-            mes_formateado = f"{letra}-{mes}"
             datos.append({
-                "mes": mes_formateado,
+                "mes": r.mes,  # Retorna directamente el formato "YYYY-MM" (ej: "2025-04")
                 "kwh": round(r.kwh or 0.0, 2),
                 "monto": round(r.monto or 0.0, 2),
                 "facturas": r.facturas,
