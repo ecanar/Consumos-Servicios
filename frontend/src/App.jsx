@@ -404,7 +404,7 @@ export default function App() {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "12px" }}>
               <h3 style={{ margin: 0, fontSize: "15px", fontWeight: "700", color: "#0f172a" }}>Cuentas Registradas ({kpis.total_cuentas})</h3>
               <p style={{ fontSize: "11px", color: "#64748b", margin: 0 }}>
-                Haz clic en una cuenta para filtrar las estadísticas | Ordenadas por facturación acumulada
+                Haz clic en una cuenta para filtrar las estadísticas | Valores del último mes registrado
               </p>
             </div>
             <div style={{ display: "flex", gap: "12px", overflowX: "auto", paddingBottom: "8px" }}>
@@ -415,11 +415,11 @@ export default function App() {
               >
                 <div className="account-info">
                   <span className="account-name">Todas las cuentas</span>
-                  <span className="account-number">Vista Global</span>
+                  <span className="account-number">Vista Global (Mes)</span>
                 </div>
                 <div className="account-stats">
-                  <span className="account-monto">{formatUSD(resumenCuentas.reduce((acc, c) => acc + c.monto, 0))}</span>
-                  <span className="account-kwh">{formatKWH(resumenCuentas.reduce((acc, c) => acc + c.kwh, 0))}</span>
+                  <span className="account-monto">{formatUSD(resumenCuentas.reduce((acc, c) => acc + (c.ultimo_mes_monto || 0), 0))}</span>
+                  <span className="account-kwh">{formatKWH(resumenCuentas.reduce((acc, c) => acc + (c.ultimo_mes_kwh || 0), 0))}</span>
                 </div>
               </div>
 
@@ -435,8 +435,8 @@ export default function App() {
                     <span className="account-number">Cuenta: {c.cuenta}</span>
                   </div>
                   <div className="account-stats">
-                    <span className="account-monto">{formatUSD(c.monto)}</span>
-                    <span className="account-kwh">{formatKWH(c.kwh)}</span>
+                    <span className="account-monto">{formatUSD(c.ultimo_mes_monto || 0)}</span>
+                    <span className="account-kwh">{formatKWH(c.ultimo_mes_kwh || 0)}</span>
                   </div>
                 </div>
               ))}

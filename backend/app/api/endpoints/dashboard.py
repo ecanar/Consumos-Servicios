@@ -172,7 +172,7 @@ def consumo_mensual(cuenta: Optional[str] = None, db: Session = Depends(get_db))
 
 @router.get("/resumen-cuentas")
 def resumen_por_cuenta(db: Session = Depends(get_db)):
-    # Resumen acumulado de todas las cuentas agrupando correctamente por cuenta y cliente para compatibilidad estricta de PostgreSQL
+    # 1. Resumen histórico acumulado
     resultados = db.query(
         Factura.cuenta,
         Factura.cliente_nombre,
@@ -181,14 +181,35 @@ def resumen_por_cuenta(db: Session = Depends(get_db)):
         func.sum(Factura.monto_total).label("monto"),
     ).filter(Factura.estado == "ok", Factura.cuenta.isnot(None)).group_by(Factura.cuenta, Factura.cliente_nombre).order_by(func.sum(Factura.monto_total).desc()).all()
 
+    # 2. Obtener los valores del último mes (última factura emitida) para cada cuenta
+    subquery_last = db.query(
+        Factura.cuenta,
+        func.max(Factura.fecha_emision).label("max_fecha")
+    ).filter(Factura.estado == "ok", Factura.cuenta.isnot(None)).group_by(Factura.cuenta).subquery()
+
+    ultimas_facturas = db.query(
+        Factura.cuenta,
+        Factura.monto_total.label("monto"),
+        Factura.consumo_kwh.label("kwh")
+    ).join(
+        subquery_last,
+        (Factura.cuenta == subquery_last.c.cuenta) & (Factura.fecha_emision == subquery_last.c.max_fecha)
+    ).filter(Factura.estado == "ok").all()
+
+    # Mapa para búsquedas rápidas: {cuenta: (monto, kwh)}
+    mapa_ultimas = {f.cuenta: (f.monto, f.kwh) for f in ultimas_facturas}
+
     datos = []
     for r in resultados:
+        u_monto, u_kwh = mapa_ultimas.get(r.cuenta, (0.0, 0.0))
         datos.append({
             "cuenta": r.cuenta,
             "cliente_nombre": r.cliente_nombre or "Desconocido",
             "facturas": r.facturas,
             "kwh": round(r.kwh or 0.0, 2),
             "monto": round(r.monto or 0.0, 2),
+            "ultimo_mes_kwh": round(u_kwh or 0.0, 2),
+            "ultimo_mes_monto": round(u_monto or 0.0, 2),
             "costo_kwh": round((r.monto / r.kwh) if r.kwh and r.kwh > 0 else 0.0, 4)
         })
     return datos
