@@ -59,6 +59,19 @@ const getFotoUrl = (fotoNombre) => {
   return `/fotos/${fotoNombre}`
 }
 
+const colorsPalette = [
+  "#2563eb", // Azul Real
+  "#059669", // Verde Esmeralda
+  "#dc2626", // Rojo Carmesí
+  "#d97706", // Naranja Ámbar
+  "#7c3aed", // Púrpura Violeta
+  "#0d9488", // Verde Azulado (Teal)
+  "#e11d48", // Rosa Fuerte (Rose)
+  "#0284c7", // Azul Cielo
+  "#b45309", // Marrón Cálido
+  "#4f46e5", // Índigo
+];
+
 export default function App() {
   // Navigation
   const [currentView, setCurrentView] = useState("menu") // menu, dashboard, upload, medidores
@@ -436,35 +449,73 @@ export default function App() {
               <div
                 className={`account-item ${cuentaSeleccionada === "" ? "active" : ""}`}
                 onClick={() => handleSeleccionarItemCuenta("")}
-                style={{ minWidth: "220px", flexShrink: 0 }}
+                style={{ 
+                  minWidth: "220px", 
+                  flexShrink: 0,
+                  borderColor: cuentaSeleccionada === "" ? "#334155" : "rgba(148, 163, 184, 0.15)",
+                  boxShadow: cuentaSeleccionada === "" ? `0 4px 12px rgba(51, 65, 85, 0.15)` : ""
+                }}
+                onMouseEnter={(e) => {
+                  if (cuentaSeleccionada !== "") {
+                    e.currentTarget.style.borderColor = "#334155";
+                    e.currentTarget.style.background = "#ffffff";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (cuentaSeleccionada !== "") {
+                    e.currentTarget.style.borderColor = "rgba(148, 163, 184, 0.15)";
+                    e.currentTarget.style.background = "rgba(255, 255, 255, 0.4)";
+                  }
+                }}
               >
                 <div className="account-info">
-                  <span className="account-name">Todas las cuentas</span>
-                  <span className="account-number">Vista Global (Mes)</span>
+                  <span className="account-name" style={{ color: "#334155" }}>Todas las cuentas</span>
+                  <span className="account-number" style={{ color: "rgba(51, 65, 85, 0.6)" }}>Vista Global (Mes)</span>
                 </div>
                 <div className="account-stats">
-                  <span className="account-monto">{formatUSD(resumenCuentas.reduce((acc, c) => acc + (c.ultimo_mes_monto || 0), 0))}</span>
-                  <span className="account-kwh">{formatKWH(resumenCuentas.reduce((acc, c) => acc + (c.ultimo_mes_kwh || 0), 0))}</span>
+                  <span className="account-monto" style={{ color: "#334155" }}>{formatUSD(resumenCuentas.reduce((acc, c) => acc + (c.ultimo_mes_monto || 0), 0))}</span>
+                  <span className="account-kwh" style={{ color: "rgba(51, 65, 85, 0.8)" }}>{formatKWH(resumenCuentas.reduce((acc, c) => acc + (c.ultimo_mes_kwh || 0), 0))}</span>
                 </div>
               </div>
 
-              {resumenCuentas.map((c) => (
-                <div
-                  key={c.cuenta}
-                  className={`account-item ${cuentaSeleccionada === c.cuenta ? "active" : ""}`}
-                  onClick={() => handleSeleccionarItemCuenta(c.cuenta)}
-                  style={{ minWidth: "220px", flexShrink: 0 }}
-                >
-                  <div className="account-info">
-                    <span className="account-name">{c.cliente_nombre}</span>
-                    <span className="account-number">Cuenta: {c.cuenta}</span>
+              {resumenCuentas.map((c, index) => {
+                const itemColor = colorsPalette[index % colorsPalette.length];
+                const isActive = cuentaSeleccionada === c.cuenta;
+                return (
+                  <div
+                    key={c.cuenta}
+                    className={`account-item ${isActive ? "active" : ""}`}
+                    onClick={() => handleSeleccionarItemCuenta(c.cuenta)}
+                    style={{ 
+                      minWidth: "220px", 
+                      flexShrink: 0,
+                      borderColor: isActive ? itemColor : "rgba(148, 163, 184, 0.15)",
+                      boxShadow: isActive ? `0 4px 12px ${itemColor}1c` : ""
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.borderColor = itemColor;
+                        e.currentTarget.style.background = "#ffffff";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.borderColor = "rgba(148, 163, 184, 0.15)";
+                        e.currentTarget.style.background = "rgba(255, 255, 255, 0.4)";
+                      }
+                    }}
+                  >
+                    <div className="account-info">
+                      <span className="account-name" style={{ color: itemColor }}>{c.cliente_nombre}</span>
+                      <span className="account-number" style={{ color: `${itemColor}9c` }}>Cuenta: {c.cuenta}</span>
+                    </div>
+                    <div className="account-stats">
+                      <span className="account-monto" style={{ color: itemColor }}>{formatUSD(c.ultimo_mes_monto || 0)}</span>
+                      <span className="account-kwh" style={{ color: `${itemColor}cc` }}>{formatKWH(c.ultimo_mes_kwh || 0)}</span>
+                    </div>
                   </div>
-                  <div className="account-stats">
-                    <span className="account-monto">{formatUSD(c.ultimo_mes_monto || 0)}</span>
-                    <span className="account-kwh">{formatKWH(c.ultimo_mes_kwh || 0)}</span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
 
