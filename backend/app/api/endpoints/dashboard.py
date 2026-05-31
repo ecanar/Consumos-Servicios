@@ -48,26 +48,38 @@ def obtener_kpis(cuenta: Optional[str] = None, db: Session = Depends(get_db)):
         promedio_kwh_6m = sum(valid_kwh) / len(valid_kwh) if valid_kwh else 0.0
         promedio_monto_6m = sum(valid_monto) / len(valid_monto) if valid_monto else 0.0
 
-    # Función helper para obtener acumulado y promedio de las últimas N facturas
-    def obtener_stats_ultimas_n(n: int):
-        sub_n = db.query(Factura.consumo_kwh, Factura.monto_total).filter(
-            Factura.estado == "ok",
-            Factura.fecha_emision.isnot(None)
-        )
-        if cuenta:
-            sub_n = sub_n.filter(Factura.cuenta == cuenta)
-        
-        facturas_n = sub_n.order_by(Factura.fecha_emision.desc()).limit(n).all()
-        
-        valid_kwh = [f[0] for f in facturas_n if f[0] is not None]
-        valid_monto = [f[1] for f in facturas_n if f[1] is not None]
+    # Determinamos la expresión de agrupación mensual compatible con la base de datos
+    if db.bind.dialect.name == "postgresql":
+        mes_expr = func.to_char(Factura.fecha_emision, "YYYY-MM")
+    else:
+        mes_expr = func.strftime("%Y-%m", Factura.fecha_emision)
+
+    # Agrupamos los datos mensualmente sumando todas las cuentas correspondientes a cada mes
+    mensual_query = db.query(
+        mes_expr.label("mes"),
+        func.sum(Factura.consumo_kwh).label("kwh"),
+        func.sum(Factura.monto_total).label("monto")
+    ).filter(Factura.estado == "ok", Factura.fecha_emision.isnot(None))
+
+    if cuenta:
+        mensual_query = mensual_query.filter(Factura.cuenta == cuenta)
+
+    # Ordenamos de forma descendente para tener los meses más recientes primero
+    meses_res = mensual_query.group_by("mes").order_by(mes_expr.desc()).all()
+
+    # Función helper para obtener promedios mensuales basados en la lista de meses agregados
+    def obtener_stats_mensuales_n(n: int):
+        meses_n = meses_res[:n]
+        valid_kwh = [m[1] for m in meses_n if m[1] is not None]
+        valid_monto = [m[2] for m in meses_n if m[2] is not None]
         
         total_kwh_n = sum(valid_kwh) if valid_kwh else 0.0
         total_monto_n = sum(valid_monto) if valid_monto else 0.0
-        count_n = len(facturas_n)
+        count_n = len(meses_n)
         
-        promedio_kwh_n = total_kwh_n / len(valid_kwh) if valid_kwh else 0.0
-        promedio_monto_n = total_monto_n / len(valid_monto) if valid_monto else 0.0
+        # Estos promedios representan la suma mensual dividida para el número de meses en el rango
+        promedio_kwh_n = total_kwh_n / count_n if count_n > 0 else 0.0
+        promedio_monto_n = total_monto_n / count_n if count_n > 0 else 0.0
         
         return {
             "total_kwh": round(total_kwh_n, 2),
@@ -77,22 +89,14 @@ def obtener_kpis(cuenta: Optional[str] = None, db: Session = Depends(get_db)):
             "count": count_n
         }
 
-    stats_3m = obtener_stats_ultimas_n(3)
-    stats_6m = obtener_stats_ultimas_n(6)
-    stats_12m = obtener_stats_ultimas_n(12)
+    stats_3m = obtener_stats_mensuales_n(3)
+    stats_6m = obtener_stats_mensuales_n(6)
+    stats_12m = obtener_stats_mensuales_n(12)
 
-    # Gasto y consumo de la última factura ingresada
-    ultima_factura_query = db.query(Factura.consumo_kwh, Factura.monto_total).filter(
-        Factura.estado == "ok",
-        Factura.fecha_emision.isnot(None)
-    )
-    if cuenta:
-        ultima_factura_query = ultima_factura_query.filter(Factura.cuenta == cuenta)
-    
-    ultima_fac = ultima_factura_query.order_by(Factura.fecha_emision.desc()).first()
+    # Gasto y consumo del último mes completo registrado (el mes más reciente de forma agregada)
     ultimo_mes = {
-        "monto": round(ultima_fac[1], 2) if (ultima_fac and ultima_fac[1] is not None) else 0.0,
-        "kwh": round(ultima_fac[0], 2) if (ultima_fac and ultima_fac[0] is not None) else 0.0
+        "monto": round(meses_res[0][2], 2) if (len(meses_res) > 0 and meses_res[0][2] is not None) else 0.0,
+        "kwh": round(meses_res[0][1], 2) if (len(meses_res) > 0 and meses_res[0][1] is not None) else 0.0
     }
 
     # Total de cuentas activas
