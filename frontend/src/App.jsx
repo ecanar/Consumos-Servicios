@@ -49,6 +49,16 @@ import {
   eliminarLecturaSemanal,
 } from "./lib/api"
 
+const getFotoUrl = (fotoNombre) => {
+  if (!fotoNombre) return ""
+  // Si estamos en desarrollo local con Vite (puerto 5173), redirigimos al backend en puerto 8000
+  if (window.location.port === "5173") {
+    return `http://127.0.0.1:8000/fotos/${fotoNombre}`
+  }
+  // En producción (Railway), usamos la ruta relativa del mismo host
+  return `/fotos/${fotoNombre}`
+}
+
 export default function App() {
   // Navigation
   const [currentView, setCurrentView] = useState("menu") // menu, dashboard, upload, medidores
@@ -788,7 +798,7 @@ export default function App() {
                   justifyContent: "center"
                 }}>
                   <img 
-                    src={`http://127.0.0.1:8000/fotos/${datosAsistidos.foto_nombre}`} 
+                    src={getFotoUrl(datosAsistidos.foto_nombre)} 
                     alt="Medidor" 
                     style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
                   />
@@ -978,7 +988,7 @@ export default function App() {
                       <td>
                         {l.foto_nombre ? (
                           <a 
-                            href={`http://127.0.0.1:8000/fotos/${l.foto_nombre}`} 
+                            href={getFotoUrl(l.foto_nombre)} 
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="btn-link-foto"
