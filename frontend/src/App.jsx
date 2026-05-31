@@ -513,7 +513,7 @@ export default function App() {
                       <LabelList 
                         dataKey="kwh" 
                         position="top" 
-                        style={{ fill: "#334155", fontSize: "10px", fontWeight: "700" }} 
+                        className="custom-bar-label"
                         formatter={(val) => new Intl.NumberFormat("es-EC", { maximumFractionDigits: 0 }).format(val)}
                       />
                     </Bar>
