@@ -48,3 +48,5 @@ export const confirmarLecturaAsistida = (formData) =>
   api.post('/lecturas-semanales/confirmar-asistida', formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   })
+
+export const eliminarLecturaSemanal = (id) => api.delete(`/lecturas-semanales/${id}`)

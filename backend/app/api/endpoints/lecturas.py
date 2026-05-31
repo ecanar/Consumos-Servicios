@@ -566,3 +566,23 @@ async def registrar_lectura(
     db.refresh(nueva_lectura)
 
     return nueva_lectura
+
+
+@router.delete("/{lectura_id}")
+def eliminar_lectura(lectura_id: int, db: Session = Depends(get_db)):
+    lectura = db.query(LecturaSemanal).filter(LecturaSemanal.id == lectura_id).first()
+    if not lectura:
+        raise HTTPException(status_code=404, detail="Lectura no encontrada")
+    
+    # Si la lectura tiene una foto asociada, eliminarla físicamente para no desperdiciar espacio
+    if lectura.foto_nombre:
+        foto_path = FOTOS_DIR / lectura.foto_nombre
+        if foto_path.exists():
+            try:
+                os.remove(foto_path)
+            except Exception as e:
+                print(f"No se pudo eliminar la foto de la lectura: {e}")
+                
+    db.delete(lectura)
+    db.commit()
+    return {"ok": True, "message": "Lectura eliminada con éxito"}

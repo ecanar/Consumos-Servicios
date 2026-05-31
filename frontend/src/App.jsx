@@ -18,6 +18,7 @@ import {
   Menu,
   Sparkles,
   Search,
+  Trash2,
 } from "lucide-react"
 import {
   Area,
@@ -45,6 +46,7 @@ import {
   getLecturasSemanales,
   procesarFotoMedidor,
   confirmarLecturaAsistida,
+  eliminarLecturaSemanal,
 } from "./lib/api"
 
 export default function App() {
@@ -173,6 +175,18 @@ export default function App() {
       setLecturasSemanales(res.data)
     } catch (err) {
       console.error("Error al cargar lecturas:", err)
+    }
+  }
+
+  const handleEliminarLectura = async (id) => {
+    if (window.confirm("¿Estás seguro de que deseas eliminar esta lectura? Esta acción no se puede deshacer.")) {
+      try {
+        await eliminarLecturaSemanal(id)
+        cargarLecturasSemanales()
+      } catch (err) {
+        console.error("Error al eliminar lectura:", err)
+        alert("No se pudo eliminar la lectura semanal")
+      }
     }
   }
 
@@ -920,6 +934,7 @@ export default function App() {
                     <th>Desviación</th>
                     <th>Alerta</th>
                     <th>Evidencia</th>
+                    <th style={{ textAlign: "center" }}>Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -974,11 +989,33 @@ export default function App() {
                           <span style={{ color: "#64748b", fontSize: "11px" }}>Sin foto</span>
                         )}
                       </td>
+                      <td style={{ textAlign: "center" }}>
+                        <button
+                          onClick={() => handleEliminarLectura(l.id)}
+                          style={{
+                            background: "transparent",
+                            border: "none",
+                            color: "#ef4444",
+                            cursor: "pointer",
+                            padding: "6px",
+                            borderRadius: "8px",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            transition: "all 0.2s"
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.background = "rgba(239, 68, 68, 0.1)"}
+                          onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+                          title="Eliminar Lectura"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </td>
                     </tr>
                   ))}
                   {lecturasSemanales.length === 0 && (
                     <tr>
-                      <td colSpan="9" style={{ textAlign: "center", padding: "40px", color: "#64748b" }}>
+                      <td colSpan="10" style={{ textAlign: "center", padding: "40px", color: "#64748b" }}>
                         No se han registrado lecturas semanales aún.
                       </td>
                     </tr>
