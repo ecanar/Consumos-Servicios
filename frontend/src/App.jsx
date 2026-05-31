@@ -30,6 +30,7 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  LabelList,
 } from "recharts"
 
 import {
@@ -504,19 +505,18 @@ export default function App() {
               </div>
               <div style={{ height: "110px", width: "100%", marginTop: "12px" }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={comparativaAnual} margin={{ top: 0, right: 0, left: -25, bottom: 0 }}>
+                  <BarChart data={comparativaAnual} margin={{ top: 12, right: 0, left: -25, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(148, 163, 184, 0.1)" />
                     <XAxis dataKey="anio" stroke="#64748b" fontSize={10} tickLine={false} />
-                    <YAxis stroke="#64748b" fontSize={10} tickLine={false} />
-                    <Tooltip
-                      contentStyle={{
-                        background: "transparent",
-                        border: "none",
-                        boxShadow: "none",
-                        fontSize: "12px",
-                      }}
-                    />
-                    <Bar name="Energía (kWh)" dataKey="kwh" fill="#10b981" radius={[3, 3, 0, 0]} />
+                    <YAxis stroke="#64748b" fontSize={10} tickLine={false} padding={{ top: 15 }} />
+                    <Bar name="Energía (kWh)" dataKey="kwh" fill="#10b981" radius={[3, 3, 0, 0]}>
+                      <LabelList 
+                        dataKey="kwh" 
+                        position="top" 
+                        style={{ fill: "#334155", fontSize: "10px", fontWeight: "700" }} 
+                        formatter={(val) => new Intl.NumberFormat("es-EC", { maximumFractionDigits: 0 }).format(val)}
+                      />
+                    </Bar>
                   </BarChart>
                 </ResponsiveContainer>
               </div>
