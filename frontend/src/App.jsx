@@ -350,60 +350,101 @@ export default function App() {
         </header>
       )}
 
-      {/* Hero Section */}
-      <section className="hero-card">
-        <div>
-          <p className="eyebrow">Control de Consumo Eléctrico</p>
-          <h1>Control de Consumo de Servicios</h1>
-          <p className="subtitle">
-            Monitoreo preventivo y auditoría histórica de planillas de CNEL integrados con lecturas semanales manuales de medidores.
-          </p>
-        </div>
-        <div className={`status-pill ${status === "conectado" ? "ok" : ""}`}>
-          {status === "conectado" ? "BBDD Conectada" : status}
-        </div>
-      </section>
-
       {/* 1. VIEW: MAIN MENU (HOME) */}
       {currentView === "menu" && (
-        <section className="home-menu">
-          <article className="dashboard-card menu-card" onClick={() => setCurrentView("dashboard")}>
-            <div className="menu-icon-wrapper">
-              <Activity size={32} />
+        <>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px", marginTop: "12px" }}>
+            <div>
+              <p style={{ textTransform: "uppercase", fontSize: "11px", fontWeight: "800", color: "#3b82f6", letterSpacing: "0.05em", margin: 0 }}>Control de Consumo Eléctrico</p>
+              <h1 style={{ fontSize: "28px", fontWeight: "800", color: "#0f172a", margin: "4px 0 0" }}>Control de Consumo de Servicios</h1>
             </div>
-            <h2>Dashboard Analítico</h2>
-            <p>
-              Explora las estadísticas históricas, gráficos de área de consumo y costos, balances anuales y rankings de tus {cuentas.length} cuentas registradas.
-            </p>
-          </article>
+            <div className={`status-pill ${status === "conectado" ? "ok" : ""}`}>
+              {status === "conectado" ? "BBDD Conectada" : status}
+            </div>
+          </div>
+          <section className="home-menu">
+            <article className="dashboard-card menu-card" onClick={() => setCurrentView("dashboard")}>
+              <div className="menu-icon-wrapper">
+                <Activity size={32} />
+              </div>
+              <h2>Dashboard Analítico</h2>
+              <p>
+                Explora las estadísticas históricas, gráficos de área de consumo y costos, balances anuales y rankings de tus {cuentas.length} cuentas registradas.
+              </p>
+            </article>
 
-          <article className="dashboard-card menu-card" onClick={() => setCurrentView("upload")}>
-            <div className="menu-icon-wrapper">
-              <UploadCloud size={32} />
-            </div>
-            <h2>Ingreso Mensual (PDFs)</h2>
-            <p>
-              Sube tus nuevas planillas de CNEL arrastrando los archivos PDFs. El sistema extraerá las lecturas, consumos y montos al instante.
-            </p>
-          </article>
+            <article className="dashboard-card menu-card" onClick={() => setCurrentView("upload")}>
+              <div className="menu-icon-wrapper">
+                <UploadCloud size={32} />
+              </div>
+              <h2>Ingreso Mensual (PDFs)</h2>
+              <p>
+                Sube tus nuevas planillas de CNEL arrastrando los archivos PDFs. El sistema extraerá las lecturas, consumos y montos al instante.
+              </p>
+            </article>
 
-          <article className="dashboard-card menu-card" onClick={() => setCurrentView("medidores")}>
-            <div className="menu-icon-wrapper">
-              <Clock size={32} />
-            </div>
-            <h2>Monitoreo de Medidores</h2>
-            <p>
-              ¡Cero errores de digitación! Sube la foto del medidor, el sistema lee la fecha real de la foto (EXIF), y te asiste para seleccionar el medidor visualmente con lecturas sugeridas.
-            </p>
-          </article>
-        </section>
+            <article className="dashboard-card menu-card" onClick={() => setCurrentView("medidores")}>
+              <div className="menu-icon-wrapper">
+                <Clock size={32} />
+              </div>
+              <h2>Monitoreo de Medidores</h2>
+              <p>
+                ¡Cero errores de digitación! Sube la foto del medidor, el sistema lee la fecha real de la foto (EXIF), y te asiste para seleccionar el medidor visualmente con lecturas sugeridas.
+              </p>
+            </article>
+          </section>
+        </>
       )}
 
       {/* 2. VIEW: DASHBOARD ANALYTICS */}
       {currentView === "dashboard" && (
         <>
+          {/* Cuentas Registradas Horizontal Selector */}
+          <section className="dashboard-card" style={{ marginTop: "20px", padding: "16px 24px", background: "rgba(255, 255, 255, 0.45)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "12px" }}>
+              <h3 style={{ margin: 0, fontSize: "15px", fontWeight: "700", color: "#0f172a" }}>Cuentas Registradas ({kpis.total_cuentas})</h3>
+              <p style={{ fontSize: "11px", color: "#64748b", margin: 0 }}>
+                Haz clic en una cuenta para filtrar las estadísticas | Ordenadas por facturación acumulada
+              </p>
+            </div>
+            <div style={{ display: "flex", gap: "12px", overflowX: "auto", paddingBottom: "8px" }}>
+              <div
+                className={`account-item ${cuentaSeleccionada === "" ? "active" : ""}`}
+                onClick={() => handleSeleccionarItemCuenta("")}
+                style={{ minWidth: "220px", flexShrink: 0 }}
+              >
+                <div className="account-info">
+                  <span className="account-name">Todas las cuentas</span>
+                  <span className="account-number">Vista Global</span>
+                </div>
+                <div className="account-stats">
+                  <span className="account-monto">{formatUSD(resumenCuentas.reduce((acc, c) => acc + c.monto, 0))}</span>
+                  <span className="account-kwh">{formatKWH(resumenCuentas.reduce((acc, c) => acc + c.kwh, 0))}</span>
+                </div>
+              </div>
+
+              {resumenCuentas.map((c) => (
+                <div
+                  key={c.cuenta}
+                  className={`account-item ${cuentaSeleccionada === c.cuenta ? "active" : ""}`}
+                  onClick={() => handleSeleccionarItemCuenta(c.cuenta)}
+                  style={{ minWidth: "220px", flexShrink: 0 }}
+                >
+                  <div className="account-info">
+                    <span className="account-name">{c.cliente_nombre}</span>
+                    <span className="account-number">Cuenta: {c.cuenta}</span>
+                  </div>
+                  <div className="account-stats">
+                    <span className="account-monto">{formatUSD(c.monto)}</span>
+                    <span className="account-kwh">{formatKWH(c.kwh)}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
           {/* KPI Cards Grid */}
-          <section className="grid-cards" style={{ marginTop: "24px" }}>
+          <section className="grid-cards" style={{ marginTop: "20px" }}>
             <article className="metric-card" style={{ padding: "24px" }}>
               <div style={{ overflowX: "auto" }}>
                 <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -543,47 +584,7 @@ export default function App() {
               </div>
             </div>
 
-            {/* 2. Cuentas Registradas */}
-            <div className="dashboard-card">
-              <h3>Cuentas Registradas ({kpis.total_cuentas})</h3>
-              <p style={{ fontSize: "12px", color: "#64748b", margin: "-12px 0 16px" }}>
-                Ordenado por facturación acumulada
-              </p>
-              <div className="accounts-list">
-                <div
-                  className={`account-item ${cuentaSeleccionada === "" ? "active" : ""}`}
-                  onClick={() => handleSeleccionarItemCuenta("")}
-                >
-                  <div className="account-info">
-                    <span className="account-name">Todas las cuentas</span>
-                    <span className="account-number">Vista Global</span>
-                  </div>
-                  <div className="account-stats">
-                    <span className="account-monto">{formatUSD(resumenCuentas.reduce((acc, c) => acc + c.monto, 0))}</span>
-                    <span className="account-kwh">{formatKWH(resumenCuentas.reduce((acc, c) => acc + c.kwh, 0))}</span>
-                  </div>
-                </div>
-
-                {resumenCuentas.map((c) => (
-                  <div
-                    key={c.cuenta}
-                    className={`account-item ${cuentaSeleccionada === c.cuenta ? "active" : ""}`}
-                    onClick={() => handleSeleccionarItemCuenta(c.cuenta)}
-                  >
-                    <div className="account-info">
-                      <span className="account-name">{c.cliente_nombre}</span>
-                      <span className="account-number">Cuenta: {c.cuenta}</span>
-                    </div>
-                    <div className="account-stats">
-                      <span className="account-monto">{formatUSD(c.monto)}</span>
-                      <span className="account-kwh">{formatKWH(c.kwh)}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* 3. Facturas Procesadas */}
+            {/* 2. Facturas Procesadas */}
             <div className="dashboard-card">
               <h3>Facturas Procesadas</h3>
               <div className="table-container">
