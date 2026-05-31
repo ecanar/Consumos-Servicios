@@ -500,7 +500,7 @@ export default function App() {
             <article className="metric-card" style={{ minHeight: "180px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#64748b" }}>
                 <Calendar size={20} style={{ color: "#2563eb" }} />
-                <span style={{ fontWeight: "700", fontSize: "14px" }}>Gasto por Año</span>
+                <span style={{ fontWeight: "700", fontSize: "14px" }}>Consumo por Año</span>
               </div>
               <div style={{ height: "110px", width: "100%", marginTop: "12px" }}>
                 <ResponsiveContainer width="100%" height="100%">
@@ -516,7 +516,7 @@ export default function App() {
                         fontSize: "12px",
                       }}
                     />
-                    <Bar name="Monto ($)" dataKey="monto" fill="#3b82f6" radius={[3, 3, 0, 0]} />
+                    <Bar name="Energía (kWh)" dataKey="kwh" fill="#10b981" radius={[3, 3, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
