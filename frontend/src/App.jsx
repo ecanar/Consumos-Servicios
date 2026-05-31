@@ -71,6 +71,7 @@ export default function App() {
     stats_3m: { total_monto: 0, total_kwh: 0, promedio_monto: 0, promedio_kwh: 0, count: 0 },
     stats_6m: { total_monto: 0, total_kwh: 0, promedio_monto: 0, promedio_kwh: 0, count: 0 },
     stats_12m: { total_monto: 0, total_kwh: 0, promedio_monto: 0, promedio_kwh: 0, count: 0 },
+    ultimo_mes: { monto: 0, kwh: 0 },
   })
   const [consumoMensual, setConsumoMensual] = useState([])
   const [comparativaAnual, setComparativaAnual] = useState([])
@@ -439,6 +440,15 @@ export default function App() {
                       </td>
                       <td style={{ textAlign: "right", padding: "12px 8px", paddingRight: "8px", fontSize: "13px", fontWeight: "600", color: "#0f172a" }}>
                         {formatEntero(kpis.stats_3m?.promedio_kwh || 0)}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ textAlign: "left", padding: "12px 8px", fontSize: "13px", fontWeight: "500", color: "#0f172a" }}>Valor Ult mes</td>
+                      <td style={{ textAlign: "right", padding: "12px 8px", fontSize: "13px", fontWeight: "600", color: "#0f172a" }}>
+                        {formatDecimal(kpis.ultimo_mes?.monto || 0)}
+                      </td>
+                      <td style={{ textAlign: "right", padding: "12px 8px", paddingRight: "8px", fontSize: "13px", fontWeight: "600", color: "#0f172a" }}>
+                        {formatEntero(kpis.ultimo_mes?.kwh || 0)}
                       </td>
                     </tr>
                   </tbody>

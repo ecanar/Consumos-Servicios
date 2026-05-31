@@ -81,6 +81,20 @@ def obtener_kpis(cuenta: Optional[str] = None, db: Session = Depends(get_db)):
     stats_6m = obtener_stats_ultimas_n(6)
     stats_12m = obtener_stats_ultimas_n(12)
 
+    # Gasto y consumo de la última factura ingresada
+    ultima_factura_query = db.query(Factura.consumo_kwh, Factura.monto_total).filter(
+        Factura.estado == "ok",
+        Factura.fecha_emision.isnot(None)
+    )
+    if cuenta:
+        ultima_factura_query = ultima_factura_query.filter(Factura.cuenta == cuenta)
+    
+    ultima_fac = ultima_factura_query.order_by(Factura.fecha_emision.desc()).first()
+    ultimo_mes = {
+        "monto": round(ultima_fac[1], 2) if (ultima_fac and ultima_fac[1] is not None) else 0.0,
+        "kwh": round(ultima_fac[0], 2) if (ultima_fac and ultima_fac[0] is not None) else 0.0
+    }
+
     # Total de cuentas activas
     total_cuentas = db.query(func.count(func.distinct(Factura.cuenta))).scalar() or 0
 
@@ -106,6 +120,7 @@ def obtener_kpis(cuenta: Optional[str] = None, db: Session = Depends(get_db)):
         "stats_3m": stats_3m,
         "stats_6m": stats_6m,
         "stats_12m": stats_12m,
+        "ultimo_mes": ultimo_mes,
     }
 
 
