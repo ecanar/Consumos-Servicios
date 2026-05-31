@@ -548,7 +548,13 @@ export default function App() {
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(148, 163, 184, 0.15)" />
-                    <XAxis dataKey="mes" stroke="#64748b" fontSize={12} tickLine={false} />
+                    <XAxis 
+                      dataKey="mes" 
+                      stroke="#64748b" 
+                      fontSize={12} 
+                      tickLine={false} 
+                      tickFormatter={(tick) => tick && tick.includes("-") ? tick.split("-")[1] : tick}
+                    />
                     <YAxis stroke="#64748b" fontSize={12} tickLine={false} />
                     <Tooltip
                       contentStyle={{
