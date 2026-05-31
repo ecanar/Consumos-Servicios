@@ -415,30 +415,30 @@ export default function App() {
                   </thead>
                   <tbody>
                     <tr>
-                      <td style={{ textAlign: "left", padding: "12px 8px", fontSize: "13px", fontWeight: "500", color: "#0f172a" }}>Promedio $ Ult 12m</td>
+                      <td style={{ textAlign: "left", padding: "12px 8px", fontSize: "13px", fontWeight: "500", color: "#0f172a" }}>Prom. Ult 12m</td>
                       <td style={{ textAlign: "right", padding: "12px 8px", fontSize: "13px", fontWeight: "600", color: "#0f172a" }}>
-                        {formatDecimal(kpis.stats_12m?.total_monto || 0)}
+                        {formatDecimal(kpis.stats_12m?.promedio_monto || 0)}
                       </td>
                       <td style={{ textAlign: "right", padding: "12px 8px", paddingRight: "8px", fontSize: "13px", fontWeight: "600", color: "#0f172a" }}>
-                        {formatEntero(kpis.stats_12m?.total_kwh || 0)}
+                        {formatEntero(kpis.stats_12m?.promedio_kwh || 0)}
                       </td>
                     </tr>
                     <tr>
-                      <td style={{ textAlign: "left", padding: "12px 8px", fontSize: "13px", fontWeight: "500", color: "#0f172a" }}>Promedio $ Ult 6m</td>
+                      <td style={{ textAlign: "left", padding: "12px 8px", fontSize: "13px", fontWeight: "500", color: "#0f172a" }}>Prom. Ult 6m</td>
                       <td style={{ textAlign: "right", padding: "12px 8px", fontSize: "13px", fontWeight: "600", color: "#0f172a" }}>
-                        {formatDecimal(kpis.stats_6m?.total_monto || 0)}
+                        {formatDecimal(kpis.stats_6m?.promedio_monto || 0)}
                       </td>
                       <td style={{ textAlign: "right", padding: "12px 8px", paddingRight: "8px", fontSize: "13px", fontWeight: "600", color: "#0f172a" }}>
-                        {formatEntero(kpis.stats_6m?.total_kwh || 0)}
+                        {formatEntero(kpis.stats_6m?.promedio_kwh || 0)}
                       </td>
                     </tr>
                     <tr>
-                      <td style={{ textAlign: "left", padding: "12px 8px", fontSize: "13px", fontWeight: "500", color: "#0f172a" }}>Promedio $ Ult 3m</td>
+                      <td style={{ textAlign: "left", padding: "12px 8px", fontSize: "13px", fontWeight: "500", color: "#0f172a" }}>Prom. Ult 3m</td>
                       <td style={{ textAlign: "right", padding: "12px 8px", fontSize: "13px", fontWeight: "600", color: "#0f172a" }}>
-                        {formatDecimal(kpis.stats_3m?.total_monto || 0)}
+                        {formatDecimal(kpis.stats_3m?.promedio_monto || 0)}
                       </td>
                       <td style={{ textAlign: "right", padding: "12px 8px", paddingRight: "8px", fontSize: "13px", fontWeight: "600", color: "#0f172a" }}>
-                        {formatEntero(kpis.stats_3m?.total_kwh || 0)}
+                        {formatEntero(kpis.stats_3m?.promedio_kwh || 0)}
                       </td>
                     </tr>
                   </tbody>
