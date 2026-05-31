@@ -68,6 +68,9 @@ export default function App() {
     total_facturas_6m: 0,
     costo_promedio_kwh: 0,
     total_cuentas: 0,
+    stats_3m: { total_monto: 0, total_kwh: 0, promedio_monto: 0, promedio_kwh: 0, count: 0 },
+    stats_6m: { total_monto: 0, total_kwh: 0, promedio_monto: 0, promedio_kwh: 0, count: 0 },
+    stats_12m: { total_monto: 0, total_kwh: 0, promedio_monto: 0, promedio_kwh: 0, count: 0 },
   })
   const [consumoMensual, setConsumoMensual] = useState([])
   const [comparativaAnual, setComparativaAnual] = useState([])
@@ -394,34 +397,86 @@ export default function App() {
         <>
           {/* KPI Cards Grid */}
           <section className="grid-cards" style={{ marginTop: "24px" }}>
-            <article className="metric-card">
-              <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#64748b" }}>
-                <DollarSign size={20} style={{ color: "#2563eb" }} />
-                <span style={{ fontWeight: "700", fontSize: "14px" }}>Inversión Histórica</span>
+            <article className="metric-card" style={{ padding: "18px 24px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#0f172a", marginBottom: "8px" }}>
+                <Layers size={20} style={{ color: "#2563eb" }} />
+                <span style={{ fontWeight: "800", fontSize: "15px", color: "#0f172a" }}>Información Acumulada</span>
               </div>
-              <strong>{formatUSD(kpis.total_monto)}</strong>
-              <span className="detail">Promedio: {formatUSD(kpis.promedio_monto)} / mes</span>
-              <span className="detail" style={{ fontSize: "12px", color: "#64748b", margin: "2px 0" }}>
-                Total de facturas: {kpis.total_facturas}
-              </span>
-              <span className="detail" style={{ fontWeight: "600", color: "#1e3a8a" }}>
-                Prom. Últ. 6M: {formatUSD(kpis.promedio_monto_6m || 0)} / mes
-              </span>
-            </article>
-
-            <article className="metric-card">
-              <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#64748b" }}>
-                <Gauge size={20} style={{ color: "#2563eb" }} />
-                <span style={{ fontWeight: "700", fontSize: "14px" }}>Consumo Acumulado</span>
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead>
+                    <tr>
+                      <th style={{ textAlign: "left", paddingLeft: "8px", fontSize: "11px" }}>Rango / Período</th>
+                      <th style={{ textAlign: "right", fontSize: "11px" }}>Gasto $$</th>
+                      <th style={{ textAlign: "right", paddingRight: "8px", fontSize: "11px" }}>Consumo kWh</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style={{ fontWeight: "700", color: "#1e3a8a", paddingLeft: "8px", paddingY: "6px" }}>
+                        Histórico Total <span style={{ fontWeight: "normal", fontSize: "10px", color: "#64748b" }}>({kpis.total_facturas} f)</span>
+                      </td>
+                      <td style={{ textAlign: "right", fontWeight: "700", color: "#1e3a8a", paddingY: "6px" }}>
+                        <div>{formatUSD(kpis.total_monto)}</div>
+                        <div style={{ fontSize: "10px", color: "#64748b", fontWeight: "normal" }}>
+                          Prom: {formatUSD(kpis.promedio_monto)}/m
+                        </div>
+                      </td>
+                      <td style={{ textAlign: "right", fontWeight: "700", color: "#1e3a8a", paddingRight: "8px", paddingY: "6px" }}>
+                        <div>{formatKWH(kpis.total_kwh)}</div>
+                        <div style={{ fontSize: "10px", color: "#64748b", fontWeight: "normal" }}>
+                          Prom: {formatKWH(kpis.promedio_kwh)}/m
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ fontWeight: "600", paddingLeft: "8px", paddingY: "6px" }}>Promedio Ult 12m</td>
+                      <td style={{ textAlign: "right", fontWeight: "600", paddingY: "6px" }}>
+                        <div>{formatUSD(kpis.stats_12m?.total_monto || 0)}</div>
+                        <div style={{ fontSize: "10px", color: "#64748b", fontWeight: "normal" }}>
+                          Prom: {formatUSD(kpis.stats_12m?.promedio_monto || 0)}/m
+                        </div>
+                      </td>
+                      <td style={{ textAlign: "right", fontWeight: "600", paddingRight: "8px", paddingY: "6px" }}>
+                        <div>{formatKWH(kpis.stats_12m?.total_kwh || 0)}</div>
+                        <div style={{ fontSize: "10px", color: "#64748b", fontWeight: "normal" }}>
+                          Prom: {formatKWH(kpis.stats_12m?.promedio_kwh || 0)}/m
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ fontWeight: "600", paddingLeft: "8px", paddingY: "6px" }}>Promedio Ult 6m</td>
+                      <td style={{ textAlign: "right", fontWeight: "600", paddingY: "6px" }}>
+                        <div>{formatUSD(kpis.stats_6m?.total_monto || 0)}</div>
+                        <div style={{ fontSize: "10px", color: "#64748b", fontWeight: "normal" }}>
+                          Prom: {formatUSD(kpis.stats_6m?.promedio_monto || 0)}/m
+                        </div>
+                      </td>
+                      <td style={{ textAlign: "right", fontWeight: "600", paddingRight: "8px", paddingY: "6px" }}>
+                        <div>{formatKWH(kpis.stats_6m?.total_kwh || 0)}</div>
+                        <div style={{ fontSize: "10px", color: "#64748b", fontWeight: "normal" }}>
+                          Prom: {formatKWH(kpis.stats_6m?.promedio_kwh || 0)}/m
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ fontWeight: "600", paddingLeft: "8px", paddingY: "6px" }}>Promedio Ult 3m</td>
+                      <td style={{ textAlign: "right", fontWeight: "600", paddingY: "6px" }}>
+                        <div>{formatUSD(kpis.stats_3m?.total_monto || 0)}</div>
+                        <div style={{ fontSize: "10px", color: "#64748b", fontWeight: "normal" }}>
+                          Prom: {formatUSD(kpis.stats_3m?.promedio_monto || 0)}/m
+                        </div>
+                      </td>
+                      <td style={{ textAlign: "right", fontWeight: "600", paddingRight: "8px", paddingY: "6px" }}>
+                        <div>{formatKWH(kpis.stats_3m?.total_kwh || 0)}</div>
+                        <div style={{ fontSize: "10px", color: "#64748b", fontWeight: "normal" }}>
+                          Prom: {formatKWH(kpis.stats_3m?.promedio_kwh || 0)}/m
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
-              <strong>{formatKWH(kpis.total_kwh)}</strong>
-              <span className="detail">Promedio: {formatKWH(kpis.promedio_kwh)} / mes</span>
-              <span className="detail" style={{ fontSize: "12px", color: "#64748b", margin: "2px 0" }}>
-                Total de facturas: {kpis.total_facturas}
-              </span>
-              <span className="detail" style={{ fontWeight: "600", color: "#065f46" }}>
-                Prom. Últ. 6M: {formatKWH(kpis.promedio_kwh_6m || 0)} / mes
-              </span>
             </article>
 
             <article className="metric-card" style={{ minHeight: "180px" }}>

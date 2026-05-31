@@ -123,7 +123,7 @@ select:focus {
 
 .grid-cards {
   display: grid;
-  grid-template-columns: 0.8fr 0.8fr 1.4fr;
+  grid-template-columns: 1.6fr 1.4fr;
   gap: 18px;
   margin-top: 22px;
 }

@@ -48,6 +48,39 @@ def obtener_kpis(cuenta: Optional[str] = None, db: Session = Depends(get_db)):
         promedio_kwh_6m = sum(valid_kwh) / len(valid_kwh) if valid_kwh else 0.0
         promedio_monto_6m = sum(valid_monto) / len(valid_monto) if valid_monto else 0.0
 
+    # Función helper para obtener acumulado y promedio de las últimas N facturas
+    def obtener_stats_ultimas_n(n: int):
+        sub_n = db.query(Factura.consumo_kwh, Factura.monto_total).filter(
+            Factura.estado == "ok",
+            Factura.fecha_emision.isnot(None)
+        )
+        if cuenta:
+            sub_n = sub_n.filter(Factura.cuenta == cuenta)
+        
+        facturas_n = sub_n.order_by(Factura.fecha_emision.desc()).limit(n).all()
+        
+        valid_kwh = [f[0] for f in facturas_n if f[0] is not None]
+        valid_monto = [f[1] for f in facturas_n if f[1] is not None]
+        
+        total_kwh_n = sum(valid_kwh) if valid_kwh else 0.0
+        total_monto_n = sum(valid_monto) if valid_monto else 0.0
+        count_n = len(facturas_n)
+        
+        promedio_kwh_n = total_kwh_n / len(valid_kwh) if valid_kwh else 0.0
+        promedio_monto_n = total_monto_n / len(valid_monto) if valid_monto else 0.0
+        
+        return {
+            "total_kwh": round(total_kwh_n, 2),
+            "total_monto": round(total_monto_n, 2),
+            "promedio_kwh": round(promedio_kwh_n, 2),
+            "promedio_monto": round(promedio_monto_n, 2),
+            "count": count_n
+        }
+
+    stats_3m = obtener_stats_ultimas_n(3)
+    stats_6m = obtener_stats_ultimas_n(6)
+    stats_12m = obtener_stats_ultimas_n(12)
+
     # Total de cuentas activas
     total_cuentas = db.query(func.count(func.distinct(Factura.cuenta))).scalar() or 0
 
@@ -70,6 +103,9 @@ def obtener_kpis(cuenta: Optional[str] = None, db: Session = Depends(get_db)):
         "total_facturas_6m": total_facturas_6m,
         "costo_promedio_kwh": round(costo_promedio_kwh, 4),
         "total_cuentas": total_cuentas,
+        "stats_3m": stats_3m,
+        "stats_6m": stats_6m,
+        "stats_12m": stats_12m,
     }
 
 
