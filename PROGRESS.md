@@ -59,4 +59,16 @@ El sistema está diseñado de manera moderna, desacoplada y lista para producci�
 
 ---
 
+## 📅 5. Historial de Actualizaciones Diarias
+
+### **Sesión: 2 de Junio de 2026**
+* **Estética de Cuentas Coloreada (Frontend)**: Asignada paleta de 10 colores corporativos premium a las tarjetas del carrusel de cuentas. Al activarse o pasar el cursor, el borde se ilumina y proyecta un brillo difuminado (`box-shadow`) personalizado según el tono de la cuenta.
+* **Sincronización Multi-PC**: Establecido el protocolo de sincronización mediante Git y Railway para trabajar indistintamente desde cualquier computadora, usando este archivo `PROGRESS.md` como puente de contexto de la IA.
+* **Herramienta de Renombrado Masivo (Fuera del Proyecto)**:
+  * Se procesaron las carpetas locales `/home/will/Documentos/2025` y `/home/will/Documentos/2026`.
+  * Se renombraron automáticamente **65 documentos tributarios PDF** (49 de 2025 y 16 de 2026) cambiando el mes escrito por su número de mes y posicionándolo en formato cronológico `YYYY-MM` (ej: `CEP IVA FEBRERO 2025.pdf` ➔ `CEP IVA 2025-02.pdf`).
+  * Los espacios en blanco redundantes se limpiaron a un único espacio estándar.
+
+---
+
 *Última actualización de progreso: 2 de Junio de 2026.*
